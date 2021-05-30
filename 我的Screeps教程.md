@@ -1,6 +1,24 @@
-## 教程1--游戏UI与编程
+## 教程1--游戏UI与游戏编程
 
-### 1.1.创建一个采矿creep
+### 1.1.1.欢迎来到 Screeps！
+
+这个教程将帮助您一步步地了解这个游戏的基础概念。您可以稍后再进行这个教程，但是我们强烈建议您在开始真正的游戏前先来试试手。
+
+Screeps 是一个为程序员们设计的游戏，如果您不知道如何编写 JavaScript 代码，来试试这个 [免费的交互式课程](https://codecademy.com/learn/javascript)
+
+
+
+### 1.1.2.让我们开始吧！
+
+这是一个被称为 “房间（room）” 的游戏窗口，在实际游戏中，房间会通过出口（exit）与其他房间相连，但是在模拟模式下，只有一个房间可以供您使用。
+
+屏幕中心的这个小东西是您的第一个 Spawn，它是您的殖民地核心。
+
+文档：
+
+- [游戏世界](https://screeps-cn.gitee.io/introduction.html#游戏世界)
+
+### 1.1.3创建一个采矿creep
 
 您的 Spawn 可以通过 `spawnCreep` 方法创建名为 “creep” 的新单位。可以在 [本文档](https://screeps-cn.gitee.io/index.html) 中找到该方法的介绍。每个 creep 都有一个名字（name）和一定量的身体部件（body part），不同的身体部件会带来不同的能力。
 
@@ -181,7 +199,7 @@ module.exports.loop = function () {
 
 在本教程部分中，我们将来介绍您房间中的重要战略目标：**房间控制器**（controller）。控制这个不可摧毁的小东西将允许您在房间中建造建筑。控制器的等级越高，允许建造的建筑就越多。
 
-2.1
+### 2.1.1.创建一个升级工人
 
 您将需要一个新 creep 工作单位去升级您的控制器等级，让我们称其为 “Upgrader1”。在接下来的章节中我们将介绍如何自动创建 creep，但是现在让我们还是和之前一样在控制器里输入下面的命令。
 
@@ -197,9 +215,9 @@ module.exports.loop = function () {
 
 
 
-creep “Upgrader1” 将执行和 harvester 相同的任务，但是我们并不想让它这么做。我们需要一个不同的 creep 角色（role）。
+### 2.1.2.creep “Upgrader1” 将执行和 harvester 相同的任务，但是我们并不想让它这么做。我们需要一个不同的 creep 角色（role）。
 
-2.2
+### 2.2.用内存设置不同的creep角色
 
 为此，我们需要利用每个 creep 都有的 `memory` 属性，该属性允许在 creep 的“内存”中写入自定义信息。这样，我们就可以给 creep 分配不同的角色。
 
@@ -217,7 +235,7 @@ Game.creeps['Harvester1'].memory.role = 'harvester';
 Game.creeps['Upgrader1'].memory.role = 'upgrader';
 ```
 
-2.3
+### 2.3.让采矿工人和升级工人工作
 
 您可以在左侧的 creep 信息面板或者 “内存” 面板中查看您 creep 的内存。
 
@@ -254,4 +272,32 @@ var roleUpgrader = {
 
 module.exports = roleUpgrader;
 ```
+
+### 2.4.创建升级工人模块
+
+在我们的 main 模块中，所有的 creep 都在扮演相同的角色。我们需要使用先前定义的 `Creep.memory.role` 属性区分它们的行为，注意不要忘记导入新模块哦。
+
+将 `role.upgrader` 模块中的逻辑应用到拥有 `upgrader` 角色的 creep 身上并检查其表现。
+
+```javascript
+var roleHarvester = require('role.harvester');
+var roleUpgrader = require('role.upgrader');
+
+module.exports.loop = function () {
+
+    for(var name in Game.creeps) {
+        var creep = Game.creeps[name];
+        if(creep.memory.role == 'harvester') {
+            roleHarvester.run(creep);
+        }
+        if(creep.memory.role == 'upgrader') {
+            roleUpgrader.run(creep);
+        }
+    }
+}
+```
+
+干得好，您已经成功升级了您控制器的等级！
+
+**重要：**如果您在 20,000 游戏 tick 内都没有升级您的控制器的话，它将会损失一个等级。当降至 0 级时，您将失去对房间的控制权，并且其他的玩家可以毫无代价的将其占领。请确保至少有一个 creep 定期执行 `upgradeController` 方法。
 
