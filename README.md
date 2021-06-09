@@ -1,2 +1,1 @@
-# Screeps-
-Screeps中文入门教程
+# Screeps中文入门教程
